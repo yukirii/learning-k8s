@@ -1,4 +1,4 @@
-## contexts
+## context
 
 useful tool: https://github.com/ahmetb/kubectx
 
