@@ -1,9 +1,11 @@
 ## contexts
 
+useful tool: https://github.com/ahmetb/kubectx
+
 ### list contexts
 
 ```bash
-kubectl config view -o jsonpath="{.contexts[*].name}:" | tr ":" "\n"
+kubectl config view -o jsonpath="{.contexts[*].name}:" | sed "s/\s\|\:/\n/g"
 ```
 
 ### show current context
