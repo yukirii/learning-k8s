@@ -6,7 +6,7 @@ https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-reposi
 
 ```bash
 apt-get update
-apt-get install \
+apt-get install -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -18,7 +18,7 @@ add-apt-repository \
    stable"
 
 apt-get update
-apt-get install docker-ce
+apt-get install -y docker-ce
 
 systemctl daemon-reload
 systemctl start docker
@@ -33,7 +33,7 @@ systemctl enable docker
 mkdir -p /etc/kubernetes
 
 # kubernetes v.1.9.1 をダウンロードし展開
-wget https://github.com/kubernetes/kubernetes/releases/download/v1.9.n/kubernetes.tar.gz
+wget https://github.com/kubernetes/kubernetes/releases/download/v1.9.1/kubernetes.tar.gz
 tar zxvf kubernetes.tar.gz
 
 # バイナリをダウンロード
