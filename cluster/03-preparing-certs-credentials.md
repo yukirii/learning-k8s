@@ -429,3 +429,14 @@ kubectl config set-context default \
 
 kubectl config use-context default --kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig
 ```
+
+---
+
+## Distribute kubeconfig files
+
+```bash
+cd /etc/kubernetes
+for instance in kirii-k8s-master01 kirii-k8s-node01 kirii-k8s-node02; do
+  scp ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}:~/
+done
+```
