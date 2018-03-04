@@ -1,6 +1,6 @@
-## Preparing Certs, Credentials
+# Preparing Certs, Credentials
 
-### Certificate Authority
+## Certificate Authority
 
 ```bash
 mkdir -p /etc/kubernetes/pki
@@ -15,9 +15,26 @@ openssl genrsa -out ca.key 2048
 openssl req -x509 -new -nodes -key ca.key -subj "/CN=${MASTER_IP}" -days 10000 -out ca.crt
 ```
 
-### X.509 証明書の作成
+### Kubernetes 用ルート証明書を配置する
 
-#### admin Client Certificate
+https://cloudpack.media/14148
+
+```bash
+# for Ubuntu
+mkdir /usr/share/ca-certificates/kubernetes
+cp ca.crt /usr/share/ca-certificates/kubernetes
+
+## /usr/share/ca-certificets からの相対パスでファイル名を追記
+echo "kubernetes/ca.crt" >> /etc/ca-certificates.conf
+
+update-ca-certificates
+```
+
+---
+
+## X.509 証明書の作成
+
+### admin Client Certificate
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
@@ -66,11 +83,12 @@ openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key \
   -CAcreateserial -out admin.crt -days 10000 \
   -extensions v3_ext -extfile admin-csr.conf
 
-# server certificateを表示する。これをそれぞれの設定におけるcertificateとして利用する
+# server certificateを表示する
+# これをそれぞれの設定における certificate として利用する
 openssl x509 -noout -text -in ./admin.crt
 ```
 
-#### kubelet Client Certificate
+### kubelet Client Certificate
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
@@ -86,11 +104,7 @@ req_extensions = req_ext
 distinguished_name = dn
 
 [ dn ]
-C = JP
-ST = Tokyo
-L = Shibuya-ku
 O = system:nodes
-OU = Technology Headquarters
 CN = system:node:${instance}
 
 [ req_ext ]
@@ -122,7 +136,7 @@ openssl x509 -req -in ${instance}.csr -CA ca.crt -CAkey ca.key \
 done
 ```
 
-#### kube-proxy Client Certificate
+### kube-proxy Client Certificate
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
@@ -167,7 +181,7 @@ openssl x509 -req -in kube-proxy.csr -CA ca.crt -CAkey ca.key \
   -extensions v3_ext -extfile kube-proxy-csr.conf
 ```
 
-#### kube-controller-manager Client Certificate
+### kube-controller-manager Client Certificate
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
@@ -211,7 +225,7 @@ openssl x509 -req -in kube-controller-manager.csr -CA ca.crt -CAkey ca.key \
   -extensions v3_ext -extfile kube-controller-manager-csr.conf
 ```
 
-#### kube-scheduler Client Certificate
+### kube-scheduler Client Certificate
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
@@ -255,7 +269,7 @@ openssl x509 -req -in kube-scheduler.csr -CA ca.crt -CAkey ca.key \
   -extensions v3_ext -extfile kube-scheduler-csr.conf
 ```
 
-#### kubernetes API Server Client Certificate
+### kubernetes API Server Client Certificate
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
@@ -300,24 +314,11 @@ openssl x509 -req -in kubernetes.csr -CA ca.crt -CAkey ca.key \
   -extensions v3_ext -extfile kubernetes-csr.conf
 ```
 
-### kubernetes 用ルート証明書を配置する
+---
 
-https://cloudpack.media/14148
+## kubeconfig 作成
 
-```bash
-# for Ubuntu
-mkdir /usr/share/ca-certificates/kubernetes
-cp ca.crt /usr/share/ca-certificates/kubernetes
-
-## /usr/share/ca-certificets からの相対パスでファイル名を追記
-echo "kubernetes/ca.crt" >> /etc/ca-certificates.conf
-
-update-ca-certificates
-```
-
-### Credential を client に公開する
-
-#### kubelet kubeconfig
+### kubelet kubeconfig
 
 ```bash
 export CLUSTER_NAME=scratch
@@ -346,7 +347,7 @@ for instance in kirii-k8s-master01 kirii-k8s-node01 kirii-k8s-node02; do
 done
 ```
 
-#### kube-proxy kubeconfig
+### kube-proxy kubeconfig
 
 ```bash
 export CLUSTER_NAME=scratch
@@ -373,7 +374,7 @@ kubectl config set-context default \
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 ```
 
-#### kube-controller-manager kubeconfig
+### kube-controller-manager kubeconfig
 
 ```bash
 export CLUSTER_NAME=scratch
@@ -400,7 +401,7 @@ kubectl config set-context default \
 kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconfig
 ```
 
-#### kube-scheduler kubeconfig
+### kube-scheduler kubeconfig
 
 ```bash
 export CLUSTER_NAME=scratch

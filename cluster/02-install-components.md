@@ -29,15 +29,9 @@ systemctl enable docker
 
 ## install Kubernetes
 
-### mkdir
-
 ```bash
 mkdir -p /etc/kubernetes
-```
 
-### ダウンロードと展開
-
-```bash
 # kubernetes v.1.9.1 をダウンロードし展開
 wget https://github.com/kubernetes/kubernetes/releases/download/v1.9.n/kubernetes.tar.gz
 tar zxvf kubernetes.tar.gz

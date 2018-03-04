@@ -1,6 +1,6 @@
-## Master node で必要なミドルウェアの設定と起動
+# Bootstrapping Components
 
-### docker
+## Docker
 
 ```bash
 cat > /etc/docker/daemon.json << EOF
@@ -14,7 +14,9 @@ EOF
 systemctl restart docker
 ```
 
-### kubelet
+---
+
+## kubelet
 
 ```bash
 kubelet \
@@ -26,7 +28,7 @@ kubelet \
   --v=2
 ```
 
-##### kubelet service
+#### kubelet service
 
 ```bash
 CLUSTER_DNS_IP=10.1.0.10
@@ -59,7 +61,7 @@ systemctl start kubelet
 systemctl status kubelet -l
 ```
 
-### kube-proxy
+## kube-proxy
 
 設定ファイルを作成する。以下のコマンドで雛形を生成し編集する。
 
@@ -106,7 +108,7 @@ udpTimeoutMilliseconds: 250ms
 kube-proxy --config=/etc/kubernetes/kube-proxy.yml --v=2
 ```
 
-##### kube-proxy service
+### kube-proxy service
 
 ```bash
 cat > /etc/systemd/system/kube-proxy.service << EOF
@@ -131,7 +133,6 @@ systemctl enable kube-proxy
 systemctl start kube-proxy
 systemctl status kube-proxy -l
 ```
-
 
 ## 各サービスの Bootstrap
 
