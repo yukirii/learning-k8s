@@ -3,8 +3,8 @@
 ## Certificate Authority
 
 ```bash
-mkdir -p /etc/kubernetes/pki
-cd /etc/kubernetes/pki
+mkdir -p /etc/kubernetes/ssl
+cd /etc/kubernetes/ssl
 
 MASTER_IP=$(hostname -I | awk '{print $1}')
 
@@ -22,7 +22,7 @@ https://cloudpack.media/14148
 ```bash
 # for Ubuntu
 mkdir /usr/share/ca-certificates/kubernetes
-cp ca.crt /usr/share/ca-certificates/kubernetes
+cp /etc/kubernetes/ssl/ca.crt /usr/share/ca-certificates/kubernetes
 
 ## /usr/share/ca-certificets からの相対パスでファイル名を追記
 echo "kubernetes/ca.crt" >> /etc/ca-certificates.conf
@@ -39,8 +39,9 @@ update-ca-certificates
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
 MASTER_CLUSTER_IP=10.1.0.1
+cd /etc/kubernetes/ssl
 
-cat > /etc/kubernetes/pki/admin-csr.conf << EOF
+cat > /etc/kubernetes/ssl/admin-csr.conf << EOF
 [ req ]
 default_bits = 2048
 prompt = no
@@ -93,9 +94,10 @@ openssl x509 -noout -text -in ./admin.crt
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
 MASTER_CLUSTER_IP=10.1.0.1
+cd /etc/kubernetes/ssl
 
 for instance in kirii-k8s-master01 kirii-k8s-node01 kirii-k8s-node02; do
-cat > /etc/kubernetes/pki/${instance}-csr.conf << EOF
+cat > /etc/kubernetes/ssl/${instance}-csr.conf << EOF
 [ req ]
 default_bits = 2048
 prompt = no
@@ -141,8 +143,9 @@ done
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
 MASTER_CLUSTER_IP=10.1.0.1
+cd /etc/kubernetes/ssl
 
-cat > /etc/kubernetes/pki/kube-proxy-csr.conf << EOF
+cat > /etc/kubernetes/ssl/kube-proxy-csr.conf << EOF
 [ req ]
 default_bits = 2048
 prompt = no
@@ -186,8 +189,9 @@ openssl x509 -req -in kube-proxy.csr -CA ca.crt -CAkey ca.key \
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
 MASTER_CLUSTER_IP=10.1.0.1
+cd /etc/kubernetes/ssl
 
-cat > /etc/kubernetes/pki/kube-controller-manager-csr.conf << EOF
+cat > /etc/kubernetes/ssl/kube-controller-manager-csr.conf << EOF
 [ req ]
 default_bits = 2048
 prompt = no
@@ -230,8 +234,9 @@ openssl x509 -req -in kube-controller-manager.csr -CA ca.crt -CAkey ca.key \
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
 MASTER_CLUSTER_IP=10.1.0.1
+cd /etc/kubernetes/ssl
 
-cat > /etc/kubernetes/pki/kube-scheduler-csr.conf << EOF
+cat > /etc/kubernetes/ssl/kube-scheduler-csr.conf << EOF
 [ req ]
 default_bits = 2048
 prompt = no
@@ -274,8 +279,9 @@ openssl x509 -req -in kube-scheduler.csr -CA ca.crt -CAkey ca.key \
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
 MASTER_CLUSTER_IP=10.1.0.1
+cd /etc/kubernetes/ssl
 
-cat > /etc/kubernetes/pki/kubernetes-csr.conf << EOF
+cat > /etc/kubernetes/ssl/kubernetes-csr.conf << EOF
 [ req ]
 default_bits = 2048
 prompt = no
@@ -323,27 +329,26 @@ openssl x509 -req -in kubernetes.csr -CA ca.crt -CAkey ca.key \
 ```bash
 export CLUSTER_NAME=scratch
 export MASTER_IP=$(hostname -I | awk '{print $1}')
-export CA_CERT=/etc/kubernetes/pki/ca.crt
 
 for instance in kirii-k8s-master01 kirii-k8s-node01 kirii-k8s-node02; do
   kubectl config set-cluster ${CLUSTER_NAME} \
-    --certificate-authority=${CA_CERT} \
+    --certificate-authority=/etc/kubernetes/ssl/ca.crt \
     --embed-certs=true \
     --server=https://${MASTER_IP}:6443 \
-    --kubeconfig=${instance}.kubeconfig
+    --kubeconfig=/etc/kubernetes/${instance}.kubeconfig
 
   kubectl config set-credentials system:node:${instance} \
-    --client-certificate=${instance}.crt \
-    --client-key=${instance}.key \
+    --client-certificate=/etc/kubernetes/ssl/${instance}.crt \
+    --client-key=/etc/kubernetes/ssl/${instance}.key \
     --embed-certs=true \
-    --kubeconfig=${instance}.kubeconfig
+    --kubeconfig=/etc/kubernetes/${instance}.kubeconfig
 
   kubectl config set-context default \
     --cluster=${CLUSTER_NAME} \
     --user=system:node:${instance} \
-    --kubeconfig=${instance}.kubeconfig
+    --kubeconfig=/etc/kubernetes/${instance}.kubeconfig
 
-  kubectl config use-context default --kubeconfig=${instance}.kubeconfig
+  kubectl config use-context default --kubeconfig=/etc/kubernetes/${instance}.kubeconfig
 done
 ```
 
@@ -352,26 +357,25 @@ done
 ```bash
 export CLUSTER_NAME=scratch
 export MASTER_IP=$(hostname -I | awk '{print $1}')
-export CA_CERT=/etc/kubernetes/pki/ca.crt
 
 kubectl config set-cluster ${CLUSTER_NAME} \
-  --certificate-authority=${CA_CERT} \
+  --certificate-authority=/etc/kubernetes/ssl/ca.crt \
   --embed-certs=true \
   --server=https://${MASTER_IP}:6443 \
-  --kubeconfig=kube-proxy.kubeconfig
+  --kubeconfig=/etc/kubernetes/kube-proxy.kubeconfig
 
 kubectl config set-credentials kube-proxy \
-  --client-certificate=kube-proxy.crt \
-  --client-key=kube-proxy.key \
+  --client-certificate=/etc/kubernetes/ssl/kube-proxy.crt \
+  --client-key=/etc/kubernetes/ssl/kube-proxy.key \
   --embed-certs=true \
-  --kubeconfig=kube-proxy.kubeconfig
+  --kubeconfig=/etc/kubernetes/kube-proxy.kubeconfig
 
 kubectl config set-context default \
   --cluster=${CLUSTER_NAME} \
   --user=kube-proxy \
-  --kubeconfig=kube-proxy.kubeconfig
+  --kubeconfig=/etc/kubernetes/kube-proxy.kubeconfig
 
-kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+kubectl config use-context default --kubeconfig=/etc/kubernetes/kube-proxy.kubeconfig
 ```
 
 ### kube-controller-manager kubeconfig
@@ -379,26 +383,25 @@ kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 ```bash
 export CLUSTER_NAME=scratch
 export MASTER_IP=$(hostname -I | awk '{print $1}')
-export CA_CERT=/etc/kubernetes/pki/ca.crt
 
 kubectl config set-cluster ${CLUSTER_NAME} \
-  --certificate-authority=${CA_CERT} \
+  --certificate-authority=/etc/kubernetes/ssl/ca.crt \
   --embed-certs=true \
   --server=https://${MASTER_IP}:6443 \
-  --kubeconfig=kube-controller-manager.kubeconfig
+  --kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig
 
 kubectl config set-credentials kube-controller-manager \
-  --client-certificate=kube-controller-manager.crt \
-  --client-key=kube-controller-manager.key \
+  --client-certificate=/etc/kubernetes/ssl/kube-controller-manager.crt \
+  --client-key=/etc/kubernetes/ssl/kube-controller-manager.key \
   --embed-certs=true \
-  --kubeconfig=kube-controller-manager.kubeconfig
+  --kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig
 
 kubectl config set-context default \
   --cluster=${CLUSTER_NAME} \
   --user=kube-controller-manager \
-  --kubeconfig=kube-controller-manager.kubeconfig
+  --kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig
 
-kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconfig
+kubectl config use-context default --kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig
 ```
 
 ### kube-scheduler kubeconfig
@@ -406,24 +409,23 @@ kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconf
 ```bash
 export CLUSTER_NAME=scratch
 export MASTER_IP=$(hostname -I | awk '{print $1}')
-export CA_CERT=/etc/kubernetes/pki/ca.crt
 
 kubectl config set-cluster ${CLUSTER_NAME} \
-  --certificate-authority=${CA_CERT} \
+  --certificate-authority=/etc/kubernetes/ssl/ca.crt \
   --embed-certs=true \
   --server=https://${MASTER_IP}:6443 \
-  --kubeconfig=kube-scheduler.kubeconfig
+  --kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig
 
 kubectl config set-credentials kube-scheduler \
-  --client-certificate=kube-scheduler.crt \
-  --client-key=kube-scheduler.key \
+  --client-certificate=/etc/kubernetes/ssl/kube-scheduler.crt \
+  --client-key=/etc/kubernetes/ssl/kube-scheduler.key \
   --embed-certs=true \
-  --kubeconfig=kube-scheduler.kubeconfig
+  --kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig
 
 kubectl config set-context default \
   --cluster=${CLUSTER_NAME} \
   --user=kube-scheduler \
-  --kubeconfig=kube-scheduler.kubeconfig
+  --kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig
 
-kubectl config use-context default --kubeconfig=kube-scheduler.kubeconfig
+kubectl config use-context default --kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig
 ```

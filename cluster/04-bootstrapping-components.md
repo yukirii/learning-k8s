@@ -20,7 +20,7 @@ systemctl restart docker
 
 ```bash
 kubelet \
-  --kubeconfig=/etc/kubernetes/pki/kirii-k8s-master01.kubeconfig \
+  --kubeconfig=/etc/kubernetes/kirii-k8s-master01.kubeconfig \
   --pod-manifest-path=/etc/kubernetes/manifests \
   --cluster-dns=10.1.0.10 \
   --cluster-domain=cluster.local \
@@ -42,7 +42,7 @@ Requires=docker.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
-  --kubeconfig=/etc/kubernetes/pki/kirii-k8s-master01.kubeconfig \\
+  --kubeconfig=/etc/kubernetes/kirii-k8s-master01.kubeconfig \\
   --pod-manifest-path=/etc/kubernetes/manifests \\
   --cluster-dns=10.1.0.10 \\
   --cluster-domain=cluster.local \\
@@ -76,7 +76,7 @@ clientConnection:
   acceptContentTypes: ""
   burst: 10
   contentType: application/vnd.kubernetes.protobuf
-  kubeconfig: "/etc/kubernetes/pki/kube-proxy.kubeconfig"
+  kubeconfig: "/etc/kubernetes/kube-proxy.kubeconfig"
   qps: 5
 clusterCIDR: "10.1.0.0/16"
 configSyncPeriod: 15m0s
@@ -222,18 +222,18 @@ spec:
     - kube-apiserver
     - --secure-port=6443
     - --requestheader-allowed-names=front-proxy-client
-    - --client-ca-file=/etc/kubernetes/pki/ca.crt
+    - --client-ca-file=/etc/kubernetes/ssl/ca.crt
     - --insecure-port=0
     - --admission-control=Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,ResourceQuota
     - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
     - --requestheader-extra-headers-prefix=X-Remote-Extra-
     - --requestheader-username-headers=X-Remote-User
-    - --tls-ca-file=/etc/kubernetes/pki/ca.crt
-    - --tls-cert-file=/etc/kubernetes/pki/kubernetes.crt
-    - --tls-private-key-file=/etc/kubernetes/pki/kubernetes.key
-    - --kubelet-certificate-authority=/etc/kubernetes/pki/ca.crt
-    - --kubelet-client-certificate=/etc/kubernetes/pki/kubernetes.crt
-    - --kubelet-client-key=/etc/kubernetes/pki/kubernetes.key
+    - --tls-ca-file=/etc/kubernetes/ssl/ca.crt
+    - --tls-cert-file=/etc/kubernetes/ssl/kubernetes.crt
+    - --tls-private-key-file=/etc/kubernetes/ssl/kubernetes.key
+    - --kubelet-certificate-authority=/etc/kubernetes/ssl/ca.crt
+    - --kubelet-client-certificate=/etc/kubernetes/ssl/kubernetes.crt
+    - --kubelet-client-key=/etc/kubernetes/ssl/kubernetes.key
     - --kubelet-https=true
     - --allow-privileged=true
     - --requestheader-group-headers=X-Remote-Group
@@ -292,7 +292,7 @@ spec:
   containers:
   - command:
     - kube-scheduler
-    - --kubeconfig=/etc/kubernetes/pki/kube-scheduler.kubeconfig
+    - --kubeconfig=/etc/kubernetes/kube-scheduler.kubeconfig
     - --address=127.0.0.1
     - --leader-elect=true
     image: gcr.io/google_containers/kube-scheduler:v1.9.1
@@ -341,17 +341,17 @@ spec:
   containers:
   - command:
     - kube-controller-manager
-    - --kubeconfig=/etc/kubernetes/pki/kube-controller-manager.kubeconfig
+    - --kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig
     - --address=127.0.0.1
     - --allocate-node-cidrs=true
     - --cluster-cidr=10.1.0.0/16
-    - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
-    - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
+    - --cluster-signing-key-file=/etc/kubernetes/ssl/ca.key
+    - --cluster-signing-cert-file=/etc/kubernetes/ssl/ca.crt
     - --controllers=*,bootstrapsigner,tokencleaner
     - --leader-elect=true
-    - --root-ca-file=/etc/kubernetes/pki/ca.crt
+    - --root-ca-file=/etc/kubernetes/ssl/ca.crt
     - --use-service-account-credentials=true
-    - --service-account-private-key-file=/etc/kubernetes/pki/ca.key
+    - --service-account-private-key-file=/etc/kubernetes/ssl/ca.key
     image: gcr.io/google_containers/kube-controller-manager:v1.9.1
     livenessProbe:
       failureThreshold: 8
