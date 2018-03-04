@@ -1,6 +1,6 @@
 # Preparing Certs, Credentials
 
-## Certificate Authority
+## [master] Certificate Authority
 
 ```bash
 mkdir -p /etc/kubernetes/ssl
@@ -15,7 +15,7 @@ openssl genrsa -out ca.key 2048
 openssl req -x509 -new -nodes -key ca.key -subj "/CN=${MASTER_IP}" -days 10000 -out ca.crt
 ```
 
-### Kubernetes 用ルート証明書を配置する
+### [master] Kubernetes 用ルート証明書を配置する
 
 https://cloudpack.media/14148
 
@@ -32,7 +32,7 @@ update-ca-certificates
 
 ---
 
-## X.509 証明書の作成
+## [master] X.509 証明書の作成
 
 ### admin Client Certificate
 
@@ -324,7 +324,7 @@ openssl x509 -req -in kubernetes.csr -CA ca.crt -CAkey ca.key \
 
 ---
 
-## kubeconfig 作成
+## [master] kubeconfig 作成
 
 ### kubelet kubeconfig
 
@@ -434,7 +434,7 @@ kubectl config use-context default --kubeconfig=/etc/kubernetes/kube-scheduler.k
 
 ---
 
-## Distribute kubeconfig files
+## [master] Distribute kubeconfig files
 
 ```bash
 cd /etc/kubernetes

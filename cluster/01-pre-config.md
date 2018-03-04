@@ -1,6 +1,6 @@
 # Pre-config
 
-## Kernel Params & modules
+## [master][node] Kernel Params & modules
 
 ```bash
 echo -e "net.ipv4.ip_forward=1

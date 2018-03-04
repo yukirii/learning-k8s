@@ -1,6 +1,6 @@
 # Bootstrapping Components
 
-## Docker
+## [master][node] Docker
 
 ```bash
 cat > /etc/docker/daemon.json << EOF
@@ -14,9 +14,7 @@ EOF
 systemctl restart docker
 ```
 
----
-
-## kubelet
+## [master][node] kubelet
 
 ```bash
 kubelet \
@@ -61,7 +59,7 @@ systemctl start kubelet
 systemctl status kubelet -l
 ```
 
-## kube-proxy
+## [master][node] kube-proxy
 
 設定ファイルを作成する。以下のコマンドで雛形を生成し編集する。
 
@@ -134,7 +132,7 @@ systemctl start kube-proxy
 systemctl status kube-proxy -l
 ```
 
-## 各サービスの Bootstrap
+## [master] 各サービスの Bootstrap
 
 manifest ファイルは `/etc/kubernetes/manifests/<サービス名>.yaml` に保存する。
 
