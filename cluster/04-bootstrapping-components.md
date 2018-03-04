@@ -237,6 +237,7 @@ spec:
     - --kubelet-https=true
     - --allow-privileged=true
     - --requestheader-group-headers=X-Remote-Group
+    - --service-account-key-file=/etc/kubernetes/ssl/ca.key
     - --service-cluster-ip-range=10.1.0.0/16
     - --authorization-mode=Node,RBAC
     - --advertise-address=${INTERNAL_IP}
@@ -341,17 +342,16 @@ spec:
   containers:
   - command:
     - kube-controller-manager
-    - --kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig
-    - --address=127.0.0.1
-    - --allocate-node-cidrs=true
-    - --cluster-cidr=10.1.0.0/16
-    - --cluster-signing-key-file=/etc/kubernetes/ssl/ca.key
-    - --cluster-signing-cert-file=/etc/kubernetes/ssl/ca.crt
-    - --controllers=*,bootstrapsigner,tokencleaner
     - --leader-elect=true
+    - --kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig
+    - --address=0.0.0.0
     - --root-ca-file=/etc/kubernetes/ssl/ca.crt
-    - --use-service-account-credentials=true
     - --service-account-private-key-file=/etc/kubernetes/ssl/ca.key
+    - --cluster-signing-cert-file=/etc/kubernetes/ssl/ca.crt
+    - --cluster-signing-key-file=/etc/kubernetes/ssl/ca.key
+    - --cluster-cidr=10.1.0.0/16
+    - --use-service-account-credentials=true
+    - --v=2
     image: gcr.io/google_containers/kube-controller-manager:v1.9.1
     livenessProbe:
       failureThreshold: 8

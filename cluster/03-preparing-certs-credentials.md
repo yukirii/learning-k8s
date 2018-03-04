@@ -200,6 +200,7 @@ req_extensions = req_ext
 distinguished_name = dn
 
 [ dn ]
+O = system:kube-controller-manager
 CN = system:kube-controller-manager
 
 [ req_ext ]
@@ -245,6 +246,7 @@ req_extensions = req_ext
 distinguished_name = dn
 
 [ dn ]
+O = system:kube-scheduler
 CN = system:kube-scheduler
 
 [ req_ext ]
