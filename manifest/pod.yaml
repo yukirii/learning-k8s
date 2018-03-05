@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: namespace1
+  labels:
+    project: namespace1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ns1-nginx
+  namespace: namespace1
+spec:
+  containers:
+    - name: ns1-nginx
+      image: nginx
+      ports:
+        - containerPort: 80
