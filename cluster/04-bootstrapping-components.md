@@ -29,8 +29,6 @@ kubelet \
 #### kubelet service
 
 ```bash
-CLUSTER_DNS_IP=10.1.0.10
-
 cat > /etc/systemd/system/kubelet.service << EOF
 [Unit]
 Description=Kubernetes Kubelet
@@ -42,7 +40,7 @@ Requires=docker.service
 ExecStart=/usr/local/bin/kubelet \\
   --kubeconfig=/etc/kubernetes/kirii-k8s-master01.kubeconfig \\
   --pod-manifest-path=/etc/kubernetes/manifests \\
-  --cluster-dns=10.1.0.10 \\
+  --cluster-dns=10.32.0.10 \
   --cluster-domain=cluster.local \\
   --allow-privileged \\
   --v=2
@@ -221,7 +219,6 @@ spec:
     - --secure-port=6443
     - --requestheader-allowed-names=front-proxy-client
     - --client-ca-file=/etc/kubernetes/ssl/ca.crt
-    - --insecure-port=0
     - --admission-control=Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,ResourceQuota
     - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
     - --requestheader-extra-headers-prefix=X-Remote-Extra-
@@ -348,6 +345,7 @@ spec:
     - --cluster-signing-cert-file=/etc/kubernetes/ssl/ca.crt
     - --cluster-signing-key-file=/etc/kubernetes/ssl/ca.key
     - --cluster-cidr=10.1.0.0/16
+    - --service-cluster-ip-range=10.32.0.0/24
     - --use-service-account-credentials=true
     - --v=2
     image: gcr.io/google_containers/kube-controller-manager:v1.9.1

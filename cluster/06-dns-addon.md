@@ -4,7 +4,7 @@
 
 ```
 export DNS_DOMAIN="cluster.local"
-export DNS_SERVER_IP="10.1.0.10"
+export DNS_SERVER_IP="10.32.0.10"
 
 cd /etc/kubernetes/manifests/
 
