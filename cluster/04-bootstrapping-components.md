@@ -29,6 +29,7 @@ kubelet \
 #### kubelet service
 
 ```bash
+HOSTNAME=$(hostname)
 cat > /etc/systemd/system/kubelet.service << EOF
 [Unit]
 Description=Kubernetes Kubelet
@@ -38,9 +39,11 @@ Requires=docker.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
-  --kubeconfig=/etc/kubernetes/kirii-k8s-master01.kubeconfig \\
+  --kubeconfig=/etc/kubernetes/${HOSTNAME}.kubeconfig \\
   --pod-manifest-path=/etc/kubernetes/manifests \\
-  --cluster-dns=10.32.0.10 \
+  --cluster-dns=10.32.0.10 \\
+  --tls-cert-file=/etc/kubernetes/ssl/${HOSTNAME}.crt \\
+  --tls-private-key-file=/etc/kubernetes/ssl/${HOSTNAME}.key \\
   --cluster-domain=cluster.local \\
   --allow-privileged \\
   --v=2
@@ -345,6 +348,7 @@ spec:
     - --cluster-signing-cert-file=/etc/kubernetes/ssl/ca.crt
     - --cluster-signing-key-file=/etc/kubernetes/ssl/ca.key
     - --cluster-cidr=10.1.0.0/16
+    - --allocate-node-cidrs=true
     - --service-cluster-ip-range=10.32.0.0/24
     - --use-service-account-credentials=true
     - --v=2

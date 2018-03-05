@@ -91,12 +91,15 @@ openssl x509 -noout -text -in ./admin.crt
 
 ### kubelet Client Certificate
 
+`dig +short` だと上手く名前解決できなかった
+
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
 SERVICE_CLUSTER_IP=10.32.0.1
 cd /etc/kubernetes/ssl
 
 for instance in kirii-k8s-master01 kirii-k8s-node01 kirii-k8s-node02; do
+INSTANCE_IP=$(nslookup ${instance} | grep "Address" | grep -v "#53" | cut -d " " -f2)
 cat > /etc/kubernetes/ssl/${instance}-csr.conf << EOF
 [ req ]
 default_bits = 2048
@@ -121,6 +124,7 @@ DNS.5 = kubernetes.default.svc.cluster.local
 DNS.6 = ${instance}
 IP.1 = ${MASTER_IP}
 IP.2 = ${SERVICE_CLUSTER_IP}
+IP.3 = ${INSTANCE_IP}
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always
@@ -434,11 +438,11 @@ kubectl config use-context default --kubeconfig=/etc/kubernetes/kube-scheduler.k
 
 ---
 
-## [master] Distribute kubeconfig files
+## [master] Distribute certs & kubeconfigs
 
 ```bash
-cd /etc/kubernetes
-for instance in kirii-k8s-master01 kirii-k8s-node01 kirii-k8s-node02; do
-  scp ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}:~/
+for instance in kirii-k8s-node01 kirii-k8s-node02; do
+  scp /etc/kubernetes/ssl/ca.crt /etc/kubernetes/ssl/${instance}.crt /etc/kubernetes/ssl/${instance}.key ${instance}:~/
+  scp /etc/kubernetes/${instance}.kubeconfig /etc/kubernetes/kube-proxy.kubeconfig ${instance}:~/
 done
 ```
