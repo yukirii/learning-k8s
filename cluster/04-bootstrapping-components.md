@@ -20,7 +20,7 @@ systemctl restart docker
 kubelet \
   --kubeconfig=/etc/kubernetes/kirii-k8s-master01.kubeconfig \
   --pod-manifest-path=/etc/kubernetes/manifests \
-  --cluster-dns=10.1.0.10 \
+  --cluster-dns=10.32.0.10 \
   --cluster-domain=cluster.local \
   --allow-privileged \
   --v=2
@@ -236,7 +236,7 @@ spec:
     - --allow-privileged=true
     - --requestheader-group-headers=X-Remote-Group
     - --service-account-key-file=/etc/kubernetes/ssl/ca.key
-    - --service-cluster-ip-range=10.1.0.0/16
+    - --service-cluster-ip-range=10.32.0.0/24
     - --authorization-mode=Node,RBAC
     - --advertise-address=${INTERNAL_IP}
     - --etcd-servers=http://127.0.0.1:2379

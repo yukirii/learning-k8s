@@ -38,7 +38,7 @@ update-ca-certificates
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
-MASTER_CLUSTER_IP=10.1.0.1
+SERVICE_CLUSTER_IP=10.32.0.1
 cd /etc/kubernetes/ssl
 
 cat > /etc/kubernetes/ssl/admin-csr.conf << EOF
@@ -63,7 +63,7 @@ DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster
 DNS.5 = kubernetes.default.svc.cluster.local
 IP.1 = ${MASTER_IP}
-IP.2 = ${MASTER_CLUSTER_IP}
+IP.2 = ${SERVICE_CLUSTER_IP}
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always
@@ -93,7 +93,7 @@ openssl x509 -noout -text -in ./admin.crt
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
-MASTER_CLUSTER_IP=10.1.0.1
+SERVICE_CLUSTER_IP=10.32.0.1
 cd /etc/kubernetes/ssl
 
 for instance in kirii-k8s-master01 kirii-k8s-node01 kirii-k8s-node02; do
@@ -120,7 +120,7 @@ DNS.4 = kubernetes.default.svc.cluster
 DNS.5 = kubernetes.default.svc.cluster.local
 DNS.6 = ${instance}
 IP.1 = ${MASTER_IP}
-IP.2 = ${MASTER_CLUSTER_IP}
+IP.2 = ${SERVICE_CLUSTER_IP}
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always
@@ -142,7 +142,7 @@ done
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
-MASTER_CLUSTER_IP=10.1.0.1
+SERVICE_CLUSTER_IP=10.32.0.1
 cd /etc/kubernetes/ssl
 
 cat > /etc/kubernetes/ssl/kube-proxy-csr.conf << EOF
@@ -167,7 +167,7 @@ DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster
 DNS.5 = kubernetes.default.svc.cluster.local
 IP.1 = ${MASTER_IP}
-IP.2 = ${MASTER_CLUSTER_IP}
+IP.2 = ${SERVICE_CLUSTER_IP}
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always
@@ -188,7 +188,7 @@ openssl x509 -req -in kube-proxy.csr -CA ca.crt -CAkey ca.key \
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
-MASTER_CLUSTER_IP=10.1.0.1
+SERVICE_CLUSTER_IP=10.32.0.1
 cd /etc/kubernetes/ssl
 
 cat > /etc/kubernetes/ssl/kube-controller-manager-csr.conf << EOF
@@ -213,7 +213,7 @@ DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster
 DNS.5 = kubernetes.default.svc.cluster.local
 IP.1 = ${MASTER_IP}
-IP.2 = ${MASTER_CLUSTER_IP}
+IP.2 = ${SERVICE_CLUSTER_IP}
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always
@@ -234,7 +234,7 @@ openssl x509 -req -in kube-controller-manager.csr -CA ca.crt -CAkey ca.key \
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
-MASTER_CLUSTER_IP=10.1.0.1
+SERVICE_CLUSTER_IP=10.32.0.1
 cd /etc/kubernetes/ssl
 
 cat > /etc/kubernetes/ssl/kube-scheduler-csr.conf << EOF
@@ -259,7 +259,7 @@ DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster
 DNS.5 = kubernetes.default.svc.cluster.local
 IP.1 = ${MASTER_IP}
-IP.2 = ${MASTER_CLUSTER_IP}
+IP.2 = ${SERVICE_CLUSTER_IP}
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always
@@ -280,7 +280,7 @@ openssl x509 -req -in kube-scheduler.csr -CA ca.crt -CAkey ca.key \
 
 ```bash
 MASTER_IP=$(hostname -I | awk '{print $1}')
-MASTER_CLUSTER_IP=10.1.0.1
+SERVICE_CLUSTER_IP=10.32.0.1
 cd /etc/kubernetes/ssl
 
 cat > /etc/kubernetes/ssl/kubernetes-csr.conf << EOF
@@ -305,7 +305,7 @@ DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster
 DNS.5 = kubernetes.default.svc.cluster.local
 IP.1 = ${MASTER_IP}
-IP.2 = ${MASTER_CLUSTER_IP}
+IP.2 = ${SERVICE_CLUSTER_IP}
 
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always
