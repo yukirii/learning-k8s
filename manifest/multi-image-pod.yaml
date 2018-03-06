@@ -1,0 +1,22 @@
+# https://kubernetes.io/docs/tasks/access-application-cluster/communicate-containers-same-pod-shared-volume/<Paste>
+apiVersion: v1
+kind: Pod
+metadata:
+  name: two-containers
+spec:
+  volumes:
+    - name: shared-data
+      emptyDir: {}
+
+  containers:
+    - name: nginx-container
+      image: nginx
+      volumeMounts:
+        - name: shared-data
+          mountPath: /usr/share/nginx/html
+
+    - name: redis-container
+      image: redis
+      volumeMounts:
+        - name: shared-data
+          mountPath: /pod-data
