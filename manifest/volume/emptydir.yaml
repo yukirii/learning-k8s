@@ -1,0 +1,16 @@
+# Pod が実行されている間存在, Pod が node から削除されると emptyDir のデータも一緒に消滅
+# その名の通り最初は空っぽ
+apiVersion: v1
+kind: Pod
+metadata:
+  name: emptydir
+spec:
+  containers:
+    - image: nginx
+      name: nginx-emptydir
+      volumeMounts:
+        - mountPath: /cache
+          name: cache-volume
+  volumes:
+    - name: cache-volume
+      emptyDir: {}
